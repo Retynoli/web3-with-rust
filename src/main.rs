@@ -60,10 +60,7 @@ async fn main() -> web3::Result<()> {
 
     // Mint some NFT
     println!("NFT account balance before mint: {:?}", balance(&okoku_contract, accounts[0]).await);
-    let tx = okoku_contract.call("mintVaultNFT",
-                                 (accounts[0], 10_u32),
-                                 accounts[0],
-                                 Options::default()).await.unwrap();
+    let tx = okoku_contract.call("mintVaultNFT", (accounts[0], 1_u32),accounts[0],Options::default()).await.unwrap();
     println!("NFT account balance after mint: {:?}", balance(&okoku_contract, accounts[0]).await);
     println!("Transaction hash: {:?}", tx);
 
