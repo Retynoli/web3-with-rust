@@ -51,20 +51,25 @@ async fn main() -> web3::Result<()> {
 
     // Transfer some tokens from one account to another
     println!("Balance before transfer: {:?}", balance(&koku_contract, accounts[1]).await);
-    let tx = transfer(&koku_contract, accounts[1], accounts[0]).await;
+    let tx = koku_contract.call("transfer",
+                                (accounts[1], 42_u32),
+                                accounts[0],
+                                Options::default()).await.unwrap();
     println!("Balance after transfer: {:?}", balance(&koku_contract, accounts[1]).await);
     println!("Transaction hash: {:?}", tx);
 
-
-
+    // Mint some NFT
+    println!("NFT account balance before mint: {:?}", balance(&okoku_contract, accounts[0]).await);
+    let tx = okoku_contract.call("mintVaultNFT",
+                                 (accounts[0], 10_u32),
+                                 accounts[0],
+                                 Options::default()).await.unwrap();
+    println!("NFT account balance after mint: {:?}", balance(&okoku_contract, accounts[0]).await);
+    println!("Transaction hash: {:?}", tx);
 
     Ok(())
 }
 
 async fn balance(contract: &Contract<Http>, address: Address) -> U256 {
     contract.query("balanceOf", address, None, Options::default(), None).await.unwrap()
-}
-
-async fn transfer(contract: &Contract<Http>, to: Address, from: Address) -> H256 {
-    contract.call("transfer", (to, 42_u32), from, Options::default()).await.unwrap()
 }
