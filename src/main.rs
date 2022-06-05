@@ -25,7 +25,7 @@ async fn main() -> web3::Result<()> {
         .execute(bytecode, accounts[0], accounts[0])
         .await.unwrap();
 
-    println!("Deployed at: {}", koku_contract.address());
+    println!("Deployed at: {:?}", koku_contract.address());
 
     // Get the contract bytecode and ABI from Solidity compiler
     let bytecode = include_str!("./res/OKOKU.bin");
@@ -39,7 +39,21 @@ async fn main() -> web3::Result<()> {
         .execute(bytecode, (), accounts[0])
         .await.unwrap();
 
-    println!("Deployed at: {}", okoku_contract.address());
+    println!("Deployed at: {:?}", okoku_contract.address());
+
+    // Get the contract bytecode and ABI from Solidity compiler
+    let bytecode = include_str!("./res/Stacking.bin");
+    let abi = include_bytes!("./res/Stacking.abi");
+
+    // Deploying a stacking contract
+    let stacking_contract = Contract::deploy(web3.eth(), abi).unwrap()
+        .confirmations(0)
+        .poll_interval(time::Duration::from_secs(1))
+        .options(Options::with(|opt| opt.gas = Some(3_000_000.into())))
+        .execute(bytecode, (okoku_contract.address(), U256::from(10), koku_contract.address()), accounts[0])
+        .await.unwrap();
+
+    println!("Deployed at: {:?}", stacking_contract.address());
 
     // // If we already have a deployed contract
     // let token_address = Address::from_str("0xdEa937d22a19AFd39Aa88DdC72fF8859a102B0C3").unwrap();
@@ -71,6 +85,17 @@ async fn main() -> web3::Result<()> {
     println!("NFT account balance after mint: {:?}", balance(&okoku_contract, accounts[0]).await);
     println!("Transaction hash: {:?}", tx);
 
+    // Stake some tokens
+
+    println!("Token account balance before stake: {:?}", balance(&koku_contract, accounts[0]).await);
+
+    let tx = stacking_contract.call("deposit",
+                                    vec![0],
+                                    accounts[0],
+                                    Options::default()).await.unwrap();
+
+    println!("Token account balance after stake: {:?}", balance(&koku_contract, accounts[0]).await);
+    println!("Transaction hash: {:?}", tx);
 
     Ok(())
 }
