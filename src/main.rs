@@ -53,7 +53,7 @@ async fn main() -> web3::Result<()> {
     println!("Balance before transfer: {:?}", balance(&koku_contract, accounts[1]).await);
 
     let tx = koku_contract.call("transfer",
-                                (accounts[1], 42_u32),
+                                (accounts[1], 40_u32),
                                 accounts[0],
                                 Options::default()).await.unwrap();
 
@@ -70,6 +70,7 @@ async fn main() -> web3::Result<()> {
 
     println!("NFT account balance after mint: {:?}", balance(&okoku_contract, accounts[0]).await);
     println!("Transaction hash: {:?}", tx);
+
 
     Ok(())
 }
