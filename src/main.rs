@@ -86,16 +86,10 @@ async fn main() -> web3::Result<()> {
     println!("Transaction hash: {:?}", tx);
 
     // Stake some tokens
-
-    println!("Token account balance before stake: {:?}", balance(&koku_contract, accounts[0]).await);
-
-    let tx = stacking_contract.call("deposit",
-                                    vec![0],
-                                    accounts[0],
-                                    Options::default()).await.unwrap();
-
-    println!("Token account balance after stake: {:?}", balance(&koku_contract, accounts[0]).await);
-    println!("Transaction hash: {:?}", tx);
+   stacking_contract.call("deposit",
+                          vec![U256::from(1)],
+                          accounts[0],
+                          Options::default()).await.expect("TODO: panic message");
 
     Ok(())
 }
